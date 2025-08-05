@@ -5,8 +5,12 @@ import { FaHome, FaBars } from "react-icons/fa";
 import avatar from "../assets/avatar.webp";
 import { useMainContext } from "../context/MainContext";
 import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Layout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const { currentPath } = useMainContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const { toggleSidebar, isSidebarOpen } = useMainContext();
@@ -34,6 +38,8 @@ export default function Layout() {
       setHeading("Assign Orders");
     } else if (currentPath === "Entry-complaint") {
       setHeading("Entry Complaint");
+    } else if (currentPath === "Profile") {
+      setHeading("Profile");
     }
   }, [currentPath]);
 
@@ -90,10 +96,18 @@ export default function Layout() {
                   <div className={styles.username}>Aadhar Vault</div>
                 </div>
                 <div className={styles.buttons}>
-                  <button className={styles.button} style={{ right: "10px" }}>
+                  <button
+                    className={styles.button}
+                    style={{ right: "10px" }}
+                    onClick={() => navigate("/profile")}
+                  >
                     Profile
                   </button>
-                  <button className={styles.button} style={{ left: "10px" }}>
+                  <button
+                    className={styles.button}
+                    style={{ left: "10px" }}
+                    onClick={() => logout()}
+                  >
                     Sign out
                   </button>
                 </div>

@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import styles from "../styles/Dashboard.module.css";
 import { FaFacebookF, FaYoutube, FaInstagram, FaTwitter } from "react-icons/fa";
 import avatar from "../assets/avatar.webp";
-import { useMainContext } from "../context/MainContext";
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [stats, setStats] = useState({
-    totalAssign: 281,
-    totalComplete: 115,
-    totalPending: 36,
-    totalReject: 130,
+    totalAssign: 160,
+    totalComplete: 110,
+    totalPending: 35,
+    totalReject: 15,
   });
 
   useEffect(() => {
@@ -43,14 +42,17 @@ export default function Dashboard() {
     return date.toLocaleDateString("en-US", { weekday: "long" });
   };
 
-  // Calendar generation
-  const generateCalendar = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const today = new Date();
+
+  const generateCalendar = (monthDate) => {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
 
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
+
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
@@ -64,8 +66,24 @@ export default function Dashboard() {
     return days;
   };
 
-  const calendarDays = generateCalendar();
-  const today = new Date();
+  const calendarDays = generateCalendar(currentMonth);
+
+  const handlePrevMonth = () => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(currentMonth.getMonth() - 1);
+    setCurrentMonth(newMonth);
+  };
+
+  const handleNextMonth = () => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(currentMonth.getMonth() + 1);
+    setCurrentMonth(newMonth);
+  };
+
+  const monthYear = currentMonth.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <>
@@ -151,7 +169,10 @@ export default function Dashboard() {
               <div className={styles.dateDisplay}>
                 {formatDate(currentTime)}
               </div>
-              <div className={styles.timeDisplay}>
+              <div
+                className={styles.timeDisplay}
+                style={{ background: "rgba(0, 0, 0, 0.1)" }}
+              >
                 {formatTime(currentTime)}
               </div>
             </div>
@@ -182,7 +203,10 @@ export default function Dashboard() {
                 <a
                   href="#"
                   className={styles.socialIcon}
-                  style={{ backgroundColor: "#e4405f" }}
+                  style={{
+                    background:
+                      "linear-gradient(45deg, #feda75, #d62976, #962fbf)",
+                  }}
                 >
                   <FaInstagram />
                 </a>
@@ -206,9 +230,13 @@ export default function Dashboard() {
                 <button className={styles.calendarNav}>›</button>
               </div>
               <div className={styles.calendarSubHeader}>
-                <button className={styles.prevMonth}>‹</button>
-                <span className={styles.currentMonth}>July 2025</span>
-                <button className={styles.nextMonth}>›</button>
+                <button className={styles.prevMonth} onClick={handlePrevMonth}>
+                  ‹
+                </button>
+                <span className={styles.currentMonth}>{monthYear}</span>
+                <button className={styles.nextMonth} onClick={handleNextMonth}>
+                  ›
+                </button>
               </div>
               <div className={styles.calendarGrid}>
                 <div className={styles.dayHeaders}>
@@ -222,7 +250,10 @@ export default function Dashboard() {
                   {calendarDays.map((date, index) => {
                     const isToday =
                       date.toDateString() === today.toDateString();
-                    const isCurrentMonth = date.getMonth() === today.getMonth();
+                    const isCurrentMonth =
+                      date.getMonth() === currentMonth.getMonth() &&
+                      date.getFullYear() === currentMonth.getFullYear();
+
                     return (
                       <div
                         key={index}

@@ -1,5 +1,5 @@
 """
-URL configuration for aadharVault project.
+URL configuration for backend project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -19,6 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include('core.urls')),
-    path('api/dashboard/', include('dashboard.urls')),
+    path('api/', include('core.urls')),
 ]

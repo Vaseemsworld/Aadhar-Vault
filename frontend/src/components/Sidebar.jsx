@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styles from "../styles/Sidebar.module.css";
 import avatar from "../assets/avatar.webp";
@@ -11,12 +11,14 @@ import {
 } from "react-icons/fa";
 import { AiFillDashboard } from "react-icons/ai";
 import { useMainContext } from "../context/MainContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const { isSidebarOpen } = useMainContext();
   const location = useLocation();
-  const isActivePath = (type) => location.pathname.startsWith(`/${type}`);
-
+  const [searchParams] = useSearchParams();
+  const activeType = searchParams.get("type");
   const [expanded, setExpanded] = useState(null);
 
   const toggle = (key) => {
@@ -50,17 +52,19 @@ export default function Sidebar() {
           <div className={styles.image}>
             <img className={styles.avatar} src={avatar} alt="User" />
           </div>
-          <span className={styles.username}>Aadhar Vault</span>
+          <span
+            className={styles.username}
+            onClick={() => navigate("/profile")}
+          >
+            Aadhar Vault
+          </span>
         </div>
 
         <div className={styles.header}>MAIN NAVIGATION</div>
 
         <ul className={styles.menu}>
           <li>
-            <NavLink
-              to="/"
-              className={({ isActive }) => (isActive ? styles.active : "")}
-            >
+            <NavLink to="/" className="">
               <span className={styles.icon}>
                 <AiFillDashboard />
               </span>
@@ -106,8 +110,10 @@ export default function Sidebar() {
                   <li key={type}>
                     <NavLink
                       to={`/assign?type=${type}`}
-                      className={() =>
-                        isActivePath(type) ? styles.activeSub : ""
+                      className={({ isActive }) =>
+                        `${styles.link} ${
+                          activeType === type ? styles.active : ""
+                        }`
                       }
                     >
                       <FaRegCircle className={styles.circle} />
@@ -151,8 +157,10 @@ export default function Sidebar() {
                   <li key={type}>
                     <NavLink
                       to={`/entry-complaint?type=${type}`}
-                      className={() =>
-                        isActivePath(type) ? styles.activeSub : ""
+                      className={({ isActive }) =>
+                        `${styles.link} ${
+                          activeType === type ? styles.active : ""
+                        }`
                       }
                     >
                       <FaRegCircle className={styles.circle} />

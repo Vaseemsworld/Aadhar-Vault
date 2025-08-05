@@ -1,21 +1,8 @@
-/* .mainHeader {
-  margin-bottom: 15px;
-}
-
-.mainHeader h1 {
-  font-size: 24px;
-  color: #333;
-  margin: 0;
-}
-
-.subtitle {
-  color: #777;
-  font-size: 14px;
-} */
 .container {
   padding: 1rem;
   background: #fff;
   border-radius: 8px;
+  border-top: 2px solid green;
 }
 
 .heading {
@@ -24,9 +11,42 @@
   font-weight: bold;
   color: #444;
 }
-
+.createBtn {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  margin: 4px 0;
+}
+.plusIcon {
+  margin-right: 4px;
+  font-size: 1.1re0m;
+}
+.createBtn .btn {
+  box-sizing: border-box;
+  all: unset;
+  width: 100px;
+  background: linear-gradient(135deg, #1ab622 0%, #00cb03b3 100%);
+  border: none;
+  padding: 10px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  /* width: 100%; */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+.createBtn .btn:hover {
+  background: linear-gradient(135deg, #15911b 0%, #028604b3 100%);
+}
 .tableWrapper {
   overflow-x: auto;
+  overflow-y: auto;
 }
 
 .table {
@@ -54,17 +74,32 @@
 }
 
 .actionBtn {
-  background-color: #0d6efd;
   color: white;
   border: none;
   padding: 6px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-.actionBtn:hover {
-  background-color: #084298;
+.actionBtn.FaEdit {
+  background-color: rgba(0, 142, 0, 0.7);
+}
+.actionBtn.FaEdit:hover {
+  background-color: rgba(0, 142, 0, 1);
+}
+.actionBtn.BsFingerprint {
+  background-color: rgba(0, 0, 142, 0.7);
+}
+.actionBtn.BsFingerprint:hover {
+  background-color: rgba(0, 0, 142, 1);
+}
+.actionBtn.FaEye {
+  background-color: rgba(142, 0, 0, 0.7);
+}
+.actionBtn.FaEye:hover {
+  background-color: rgba(142, 0, 0, 1);
 }
 
 .noData {
@@ -72,6 +107,21 @@
   padding: 20px;
   color: #888;
   font-style: italic;
+}
+
+.searchRow {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.searchInput {
+  padding: 8px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 @media (max-width: 768px) {

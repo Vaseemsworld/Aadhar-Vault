@@ -1,38 +1,41 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MainProvider } from "./context/MainContext.jsx";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Home from "./components/Home.jsx";
+import Login from "./auth/Login";
+import Register from "./auth/Register";
 import PrivateRoute from "./PrivateRoute";
+
+import Layout from "./components/Layout.jsx";
 
 import Dashboard from "./pages/Dashboard";
 import AssignOrders from "./pages/AssignOrders";
-import EntryComplaint from "./pages/EntryComplaint";
-import DownloadDrivers from "./pages/DownloadDrivers";
-import Layout from "./components/Layout.jsx";
+import ProfileDashboard from "./pages/ProfileDashboard.jsx";
+import CreateOrder from "./pages/CreateOrder.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <MainProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* Protected routes layout */}
-          <Route element={<PrivateRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/assign/" element={<AssignOrders />} />
-              <Route path="/entry-complaint/" element={<AssignOrders />} />
-
-              {/* <Route path="/entry-complaint/" element={<EntryComplaint />} /> */}
-              <Route path="/drivers" element={<DownloadDrivers />} />
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            {/* {/* Protected routes layout */}
+            <Route element={<PrivateRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/dashboard/" element={<Dashboard />} />
+                <Route path="/assign/" element={<AssignOrders />} />
+                <Route path="/entry-complaint/" element={<AssignOrders />} />
+                <Route path="/profile/" element={<ProfileDashboard />} />
+                <Route path="/create-order" element={<CreateOrder />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </MainProvider>
     </BrowserRouter>
   );
