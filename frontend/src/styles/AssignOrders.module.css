@@ -1,3 +1,7 @@
+button {
+  /* all: unset; */
+  cursor: pointer;
+}
 .container {
   padding: 1rem;
   background: #fff;
@@ -18,14 +22,15 @@
   justify-content: right;
   margin: 4px 0;
 }
+
 .plusIcon {
   margin-right: 4px;
-  font-size: 1.1re0m;
+  font-size: 1.1rem;
 }
 .createBtn .btn {
   box-sizing: border-box;
   all: unset;
-  width: 100px;
+  width: 110px;
   background: linear-gradient(135deg, #1ab622 0%, #00cb03b3 100%);
   border: none;
   padding: 10px 10px;
@@ -39,10 +44,13 @@
   justify-content: center;
   text-align: center;
   font-size: 1rem;
-  transition: background 0.3s ease;
+  background-size: 200% 200%;
+  background-position: 100% 50%;
+
+  transition: background-position 0.3s ease-in-out;
 }
 .createBtn .btn:hover {
-  background: linear-gradient(135deg, #15911b 0%, #028604b3 100%);
+  background-position: 0% 50%;
 }
 .tableWrapper {
   overflow-x: auto;
@@ -96,12 +104,75 @@
   background-color: rgba(0, 0, 142, 1);
 }
 .actionBtn.FaEye {
-  background-color: rgba(142, 0, 0, 0.7);
+  background-color: rgba(142, 142, 0, 0.7);
 }
 .actionBtn.FaEye:hover {
+  background-color: rgb(142, 142, 0, 1);
+}
+.actionBtn.FaTrash {
+  background-color: rgba(142, 0, 0, 0.7);
+}
+.actionBtn.FaTrash:hover {
   background-color: rgba(142, 0, 0, 1);
 }
+/* styles.module.css */
 
+.warningBox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* dim background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.deleteContainer {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.btns {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cancelBtn,
+.deleteBtn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.cancelBtn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.deleteBtn {
+  background-color: #e53935;
+  color: white;
+}
+.deleteBtn:hover {
+  background-color: #b12c29;
+}
+.cancelBtn:hover {
+  background-color: #b8b7b7;
+}
 .noData {
   text-align: center;
   padding: 20px;

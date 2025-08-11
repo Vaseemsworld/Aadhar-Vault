@@ -196,8 +196,14 @@
   text-align: center;
   padding: 15px;
   margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
+.footer a {
+  font-size: 1.02rem;
+  color: #ffffff;
+}
 .footer p {
   margin: 0;
   font-size: 14px;

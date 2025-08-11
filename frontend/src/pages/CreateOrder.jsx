@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/CreateOrder.module.css";
 import { useLocation } from "react-router-dom";
+import api from "../utils/api";
 
 const CreateOrder = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const orderType = queryParams.get("type");
-
+  const MAX_FILE_SIZE_MB = 10;
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-
     //common fields
-    nameInEnglish: "",
     nameInHindi: "",
     dateOfBirth: "",
-    gender: "MALE",
+    gender: "",
     aadhaarNumber: "",
     mobileNumber: "",
-
     //child enroll. specific
     fatherName: "",
     fathernameInHindi: "",
     fatherAadhaarNumber: "",
-
     //address fields
     village: "",
     post: "",
@@ -31,17 +32,14 @@ const CreateOrder = () => {
     district: "",
     state: "Select a state",
     pincode: "",
-
     //document fields
     document: null,
     birthCertificate: null,
     childPhoto: null,
     addressProof: null,
-
     //purpose
     purpose: "SELECT OPTION",
   });
-
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fingerprints, setFingerprints] = useState({
@@ -50,7 +48,6 @@ const CreateOrder = () => {
     third: false,
     fourth: false,
   });
-
   const getTitle = () => {
     const titles = {
       mobile: "Mobile Update",
@@ -61,35 +58,55 @@ const CreateOrder = () => {
     };
     return titles[orderType] || "Create Order";
   };
-
   const getDocumentFields = () => {
     return orderType === "child"
       ? ["birthCertificate", "childPhoto", "addressProof"]
       : ["document"];
   };
-
   const fieldLabelMap = {
     birthCertificate: "Birth Certificate",
     childPhoto: "Child Photo (PDF Only)",
     addressProof: "Address Proof (Optional)",
     document: "Document",
   };
-
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     if (!files.length) return;
+    const file = files[0];
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      toast.error(`File "${file.name}" exceeds ${MAX_FILE_SIZE_MB}MB limit`);
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: `File must be less than ${MAX_FILE_SIZE_MB}MB`,
+      }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: files[0],
+      [name]: file,
     }));
     setFormErrors((prev) => ({
       ...prev,
       [name]: "",
     }));
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const numericOnlyFields = [
+      "aadhaarNumber",
+      "mobileNumber",
+      "fatherAadhaarNumber",
+      "pincode",
+    ];
+    if (numericOnlyFields.includes(name)) {
+      const numericValue = value.replace(/\D/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -99,92 +116,161 @@ const CreateOrder = () => {
       [name]: "",
     }));
   };
-
   const handleFingerprintClick = (fingerprintIndex) => {
     setFingerprints((prev) => ({
       ...prev,
       [fingerprintIndex]: !prev[fingerprintIndex],
     }));
   };
-
   const validateForm = () => {
     const errors = {};
-    const requiredFields = [
-      "nameInEnglish",
-      "nameInHindi",
-      "fatherNameInHindi",
-      "dateOfBirth",
-      "gender",
-      "aadhaarNumber",
-      "mobileNumber",
-      "village",
-      "post",
-      "district",
-      "state",
-      "pincode",
-      "purpose",
-    ];
-
+    let requiredFields = [];
     if (orderType === "mobile") {
-      requiredFields.push(
+      requiredFields = [
         "fullName",
         "fatherName",
         "aadhaarNumber",
         "mobileNumber",
-        "email"
-      );
-    }
-
-    if (orderType === "child") {
-      requiredFields.push(
-        "fatherAadhaarNumber",
-        "birthCertificate",
-        "childPhoto"
-      );
-      // addressProof is optional
+        // "purpose",
+      ];
+      // if (
+      //   formData.purpose === "Email Id Update" ||
+      //   formData.purpose === "Email Id & Mobile Update"
+      // ) {
+      //   requiredFields.push("email");
+      // }
     } else {
-      requiredFields.push("document");
+      requiredFields = [
+        "fullName",
+        // "nameInHindi",
+        // "fatherNameInHindi",
+        "dateOfBirth",
+        "gender",
+        // "aadhaarNumber",
+        "mobileNumber",
+        "village",
+        "post",
+        "district",
+        "state",
+        "pincode",
+      ];
+      if (orderType === "child") {
+        requiredFields.push(
+          "fatherAadhaarNumber"
+          // "birthCertificate",
+          // "childPhoto"
+        );
+        // addressProof is optional
+      } else {
+        // requiredFields.extend(["document", "purpose"]);
+        requiredFields.push("aadhaarNumber");
+      }
     }
-
     for (const field of requiredFields) {
-      if (!formData[field]) {
+      const value = formData[field];
+      if (
+        !value ||
+        (field === "state" && value === "Select a state") ||
+        (field === "purpose" && value === "SELECT OPTION")
+      ) {
         errors[field] = "This field is required";
       }
     }
-
     return errors;
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    console.log("data", formData);
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      setFormData(formData);
+      console.log(formErrors);
       alert("Please fill all required fields.");
       setIsSubmitting(false);
       return;
     }
-
     try {
-      console.log("✅ Form submitted:", formData);
-      console.log("✅ Fingerprints:", fingerprints);
-      alert("Form submitted successfully!");
-    } catch (err) {
-      console.error("Submit failed:", err);
-      alert("Something went wrong");
+      const formDataToSend = new FormData();
+      formDataToSend.append("orderType", orderType);
+      if (orderType === "mobile") {
+        formDataToSend.append("fullName", formData.fullName || "");
+        formDataToSend.append("fatherName", formData.fatherName || "");
+        formDataToSend.append("aadhaarNumber", formData.aadhaarNumber || "");
+        formDataToSend.append("mobileNumber", formData.mobileNumber || "");
+        // formDataToSend.append("purpose", formData.purpose || "");
+        // if (formData.email) {
+        // formDataToSend.append("email", formData.email || "");
+        // }
+      } else {
+        formDataToSend.append("fullName", formData.fullName || "");
+        // formDataToSend.append("nameInHindi", formData.nameInHindi || "");
+        formDataToSend.append("dateOfBirth", formData.dateOfBirth || "");
+        formDataToSend.append("gender", formData.gender.toLowerCase() || "");
+        // formDataToSend.append("aadhaarNumber", formData.aadhaarNumber || "");
+        formDataToSend.append("mobileNumber", formData.mobileNumber || "");
+        formDataToSend.append("village", formData.village || "");
+        formDataToSend.append("post", formData.post || "");
+        formDataToSend.append("landmark", formData.landmark || "");
+        formDataToSend.append("district", formData.district || "");
+        formDataToSend.append("state", formData.state || "");
+        formDataToSend.append("pincode", formData.pincode || "");
+        if (orderType === "child") {
+          formDataToSend.append("fatherName", formData.fatherName || "");
+          // formDataToSend.append(
+          //   "fathernameInHindi",
+          //   formData.fathernameInHindi || ""
+          // );
+          formDataToSend.append(
+            "fatherAadhaarNumber",
+            formData.fatherAadhaarNumber || ""
+          );
+        } else {
+          formDataToSend.append("aadhaarNumber", formData.aadhaarNumber || "");
+          // formDataToSend.append("document", formData.document || "");
+        }
+        // const documentFields = getDocumentFields();
+        // documentFields.forEach((field) => {
+        //   if (formData[field] && formData[field] instanceof File) {
+        //     formDataToSend.append(field, formData[field]);
+        //   }
+        // });
+      }
+      const fingerprintData = {};
+      Object.keys(fingerprints).forEach((finger) => {
+        if (fingerprints[finger]) {
+          fingerprintData[finger] = fingerprints[finger];
+        }
+      });
+      if (Object.keys(fingerprintData).length > 0) {
+        formDataToSend.append("fingerprints", JSON.stringify(fingerprintData));
+      }
+
+      const response = await api.post("/orders/", formDataToSend);
+      const responseData = await response.data;
+      if (!response.ok) {
+        if (response.status === 400) {
+          setFormErrors(responseData);
+        } else {
+          setFormErrors("Submission failed. Please try again later.");
+        }
+      }
+      toast.success("Order created successfully!");
+      navigate(`/assign?type=${orderType}/`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error("An error occurred while creating the order.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>{getTitle().toUpperCase()}</h1>
       </div>
-
       <div className={styles.form}>
         {orderType === "mobile" ? (
           <>
@@ -214,21 +300,26 @@ const CreateOrder = () => {
               <div className={styles.formGroup}>
                 <label className={styles.label}>Aadhaar Number.</label>
                 <input
-                  type="text"
+                  type="number"
+                  inputMode="numeric"
+                  pattern="\d*"
                   name="aadhaarNumber"
+                  placeholder="Aadhaar Number"
                   className={styles.input}
                   value={formData.aadhaarNumber}
                   onChange={handleInputChange}
                 />
               </div>
             </div>
-
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Mobile Number.</label>
                 <input
                   type="tel"
+                  pattern="\d*"
+                  inputMode="numeric"
                   name="mobileNumber"
+                  placeholder="Mobile Number"
                   className={styles.input}
                   value={formData.mobileNumber}
                   onChange={handleInputChange}
@@ -253,6 +344,7 @@ const CreateOrder = () => {
                   value={formData.purpose}
                   onChange={handleInputChange}
                 >
+                  <option value="Select option">Select Option</option>
                   <option value="Mobile Number Update">
                     Mobile Number Update
                   </option>
@@ -273,10 +365,10 @@ const CreateOrder = () => {
                 </label>
                 <input
                   type="text"
-                  name="nameInEnglish"
+                  name="fullName"
                   placeholder="Name in English"
                   className={styles.input}
-                  value={formData.nameInEnglish}
+                  value={formData.fullName}
                   onChange={handleInputChange}
                 />
               </div>
@@ -315,13 +407,13 @@ const CreateOrder = () => {
                   value={formData.gender}
                   onChange={handleInputChange}
                 >
+                  <option value="Select gender">Select gender</option>
                   <option value="MALE">MALE</option>
                   <option value="FEMALE">FEMALE</option>
                   <option value="OTHER">OTHER</option>
                 </select>
               </div>
             </div>
-
             <div className={styles.formRow}>
               {orderType === "child" && (
                 <>
@@ -357,30 +449,51 @@ const CreateOrder = () => {
                       onChange={handleInputChange}
                     />
                   </div>
+                  <div className={styles.formGroup}>
+                    <label
+                      className={styles.label}
+                      style={{ color: "#ff6b35" }}
+                    >
+                      Father's Aadhaar Number
+                    </label>
+                    <input
+                      type="text"
+                      pattern="\d*"
+                      inputMode="numeric"
+                      name="fatherAadhaarNumber"
+                      placeholder="Aadhaar Number"
+                      className={styles.input}
+                      value={formData.fatherAadhaarNumber}
+                      onChange={handleInputChange}
+                    />
+                  </div>
                 </>
               )}
-              <div className={styles.formGroup}>
-                <label className={styles.label} style={{ color: "#ff6b35" }}>
-                  {orderType === "child"
-                    ? "Father's Aadhaar Number"
-                    : "Aadhaar Number"}
-                </label>
-                <input
-                  type="text"
-                  name="aadhaarNumber"
-                  placeholder="Aadhaar Number"
-                  className={styles.input}
-                  value={formData.aadhaarNumber}
-                  onChange={handleInputChange}
-                />
-              </div>
-
+              {orderType === "demographics" && (
+                <div className={styles.formGroup}>
+                  <label className={styles.label} style={{ color: "#ff6b35" }}>
+                    Aadhaar Number
+                  </label>
+                  <input
+                    type="text"
+                    pattern="\d*"
+                    inputMode="numeric"
+                    name="aadhaarNumber"
+                    placeholder="Aadhaar Number"
+                    className={styles.input}
+                    value={formData.aadhaarNumber}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
               <div className={styles.formGroup}>
                 <label className={styles.label} style={{ color: "#ff6b35" }}>
                   Mobile Number
                 </label>
                 <input
                   type="tel"
+                  inputMode="numeric"
+                  pattern="\d*"
                   name="mobileNumber"
                   placeholder="Mobile Number"
                   className={styles.input}
@@ -389,7 +502,6 @@ const CreateOrder = () => {
                 />
               </div>
             </div>
-
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label className={styles.label} style={{ color: "red" }}>
@@ -431,7 +543,6 @@ const CreateOrder = () => {
                 />
               </div>
             </div>
-
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label className={styles.label} style={{ color: "red" }}>
@@ -447,7 +558,7 @@ const CreateOrder = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} style={{ color: "blue" }}>
+                <label className={styles.label} style={{ color: "red" }}>
                   State/राज्य
                 </label>
                 <select
@@ -489,7 +600,7 @@ const CreateOrder = () => {
                 </select>
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} style={{ color: "blue" }}>
+                <label className={styles.label} style={{ color: "red" }}>
                   Pin code
                 </label>
                 <input
@@ -502,8 +613,28 @@ const CreateOrder = () => {
                 />
               </div>
             </div>
-
             <div className={styles.formRow}>
+              {orderType === "demographics" && (
+                <div className={styles.formGroup}>
+                  <label className={styles.label} style={{ color: "red" }}>
+                    Purpose
+                  </label>
+                  <select
+                    name="purpose"
+                    className={styles.select}
+                    value={formData.purpose}
+                    onChange={handleInputChange}
+                  >
+                    <option value="Select option">Select Option</option>
+                    <option value="Name Correction">Name Correction</option>
+                    <option value="Address Correction">
+                      Address Correction
+                    </option>
+                    <option value="Gender Correction">Gender Correction</option>
+                    <option value="DOB Correction">DOB Correction</option>
+                  </select>
+                </div>
+              )}
               {getDocumentFields().map((fieldName, index) => (
                 <div key={fieldName} className={styles.formGroup}>
                   <label className={styles.label} style={{ color: "blue" }}>
@@ -522,6 +653,10 @@ const CreateOrder = () => {
                       <span className={styles.browseButton}>Browse...</span>
                       <span className={styles.fileName}>
                         {formData[fieldName]?.name || "No file selected."}
+                        {formData[fieldName]?.size &&
+                          ` (${(formData[fieldName].size / 1024 / 1024).toFixed(
+                            2
+                          )} MB)`}
                       </span>
                     </label>
                   </div>
@@ -533,7 +668,6 @@ const CreateOrder = () => {
             </div>
           </>
         )}
-
         {/* Fingerprint section */}
         <div className={styles.fingerprintSection}>
           {["first", "second", "third", "fourth"].map((finger, i) => (
@@ -556,7 +690,6 @@ const CreateOrder = () => {
             </div>
           ))}
         </div>
-
         {/* Submit button */}
         <button
           type="button"

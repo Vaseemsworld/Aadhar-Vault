@@ -9,12 +9,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Layout() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { currentPath } = useMainContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const { toggleSidebar, isSidebarOpen } = useMainContext();
-  const [heading, setHeading] = useState("Dashboard");
+  const header = user.is_staff ? "Operators" : "Dashboard";
+  const [heading, setHeading] = useState(header);
 
   const dropdownRef = useRef(null);
 
@@ -128,7 +129,7 @@ export default function Layout() {
           >
             <div className={styles.dashboardHeader}>
               {/* <div className={styles.contentHeader}> */}
-              <h1>Dashboard</h1>
+              {user.is_staff ? <h1>Operators</h1> : <h1>Dashboard</h1>}
               {/* <h1>{title}</h1> */}
               <span className={styles.subtitle}>
                 Control Panel - {getGreeting()}
@@ -149,6 +150,16 @@ export default function Layout() {
         {/* Footer */}
         <footer className={styles.footer}>
           <p>Copyright © 2024 Aadhar Vault</p>
+          <p>
+            Developed by{" "}
+            <a
+              href="https://wa.me/917073237376"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Vaseem Khan
+            </a>
+          </p>
         </footer>
       </div>
     </>

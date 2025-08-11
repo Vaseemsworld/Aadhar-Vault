@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       try {
         await api.get("csrf/");
         const res = await api.get("user/");
-        setUser(res.data.username);
+        setUser(res.data);
       } catch {
         setUser(null);
       } finally {

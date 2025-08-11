@@ -1,15 +1,25 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import styles from "../styles/Login.module.css";
 import { useAuth } from "../context/AuthContext";
 import AadhaarLoader from "../pages/Loader";
 
 export default function Login() {
-  const { login, loading } = useAuth();
+  const navigate = useNavigate();
+  const { user, login, loading } = useAuth();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard");
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) return <AadhaarLoader />;
+  if (user) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -8,12 +8,15 @@ import {
   FaMap,
   FaCloudDownloadAlt,
   FaRegCircle,
+  FaUser,
 } from "react-icons/fa";
 import { AiFillDashboard } from "react-icons/ai";
 import { useMainContext } from "../context/MainContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { isSidebarOpen } = useMainContext();
   const location = useLocation();
@@ -78,6 +81,23 @@ export default function Sidebar() {
               </span>
             </NavLink>
           </li>
+          {user.is_staff && (
+            <li>
+              <NavLink to="/operators" className="">
+                <span className={styles.icon}>
+                  <FaUser />
+                </span>
+                <span className={styles.label}>Operators</span>
+                <span
+                  className={`${styles.leftIcon} ${styles.rotatable} ${
+                    location.pathname === "/" ? styles.rotate : ""
+                  }`}
+                >
+                  <FaAngleLeft />
+                </span>
+              </NavLink>
+            </li>
+          )}
 
           {/* Assign Entry */}
           <li className={styles.treeview}>
