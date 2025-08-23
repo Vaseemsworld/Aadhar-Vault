@@ -35,7 +35,7 @@ const ProfileDashboard = () => {
   };
 
   const handleUpdateProfile = () => {
-    console.log("Profile updated:", profileData);
+    // console.log("Profile updated:", profileData);
   };
 
   useEffect(() => {
