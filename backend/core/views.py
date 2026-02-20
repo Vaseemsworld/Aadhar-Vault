@@ -178,7 +178,6 @@ class FingerprintsView(APIView):
                             enhanced_fingerprints[finger] = {**value, "BitmapData": enhanced_img}
                         else:
                             enhanced_fingerprints[finger] = value 
-                        # enhanced_fingerprints[finger] = enhance_fingerprint(img_base64)
 
                     except Exception as e:
                         enhanced_fingerprints[finger] = value

@@ -14,7 +14,7 @@ const ProfileDashboard = () => {
   const [activeTab, setActiveTab] = useState("edit");
   const [profileData, setProfileData] = useState({
     name: "Aadhar Vault",
-    phone: "8239228138",
+    phone: "",
     email: "srk@gmail.com",
     phone2: "",
     interest: "",
@@ -86,10 +86,6 @@ const ProfileDashboard = () => {
               <FaTwitter />
             </div>
           </div>
-
-          <button className={styles.updateBtn} onClick={handleUpdateProfile}>
-            Update Profile
-          </button>
 
           <div className={styles.aboutSection}>
             <h3>About Me</h3>
@@ -285,6 +281,12 @@ const ProfileDashboard = () => {
                   />
                 </div>
               </div>
+              <button
+                className={styles.updateBtn}
+                onClick={handleUpdateProfile}
+              >
+                Update Profile
+              </button>
             </div>
           )}
 

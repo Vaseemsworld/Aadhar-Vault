@@ -14,7 +14,10 @@
   z-index: 1000;
   display: flex;
   align-items: center;
-  background-color: #6f42c1;
+  background: rgba(111, 66, 193, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(167, 139, 250, 0.4);
   padding: 0 20px;
   color: white;
 }
@@ -76,7 +79,12 @@
   align-items: center;
   cursor: pointer;
 }
-
+.navProfile .profile .username {
+  transition: all 0.3s ease;
+}
+.navProfile .profile:hover .username {
+  color: #f9f871;
+}
 .dropdown {
   height: 200px;
   width: 250px;
@@ -85,6 +93,21 @@
   right: 10px;
   text-align: center;
   cursor: default;
+  background: rgba(111, 66, 193, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45),
+    0 4px 12px rgba(167, 139, 250, 0.4);
+
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.dropdown.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
 }
 .dropdown .profileInfo {
   background-color: #6f42c1;
@@ -191,7 +214,8 @@
 
 /* Footer */
 .footer {
-  background-color: #6f42c1;
+  background: rgba(111, 66, 193, 0.8);
+  backdrop-filter: blur(10px);
   color: white;
   text-align: center;
   padding: 15px;
@@ -199,32 +223,48 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: all 0.3s ease;
 }
 .footer a {
   font-size: 1.02rem;
   color: #ffffff;
+  transition: all 0.3s ease;
 }
 .footer p {
   margin: 0;
   font-size: 14px;
 }
-
+.footer a:hover {
+  color: #f9f871;
+}
 /* Responsive Design */
 @media (min-width: 768.1px) {
-  .contentWrapper {
+  .contentWrapper,
+  .footer {
     margin-left: 230px;
   }
-  .contentWrapper.sidebarClosed {
+  .contentWrapper.sidebarClosed,
+  .footer.sidebarClosed {
     margin-left: 70px;
   }
 }
 @media (max-width: 768px) {
   .contentWrapper {
     margin-left: 230px;
-    padding: 5px;
+    padding: 15px;
   }
 
-  .contentWrapper.sidebarClosed {
+  .contentWrapper.sidebarClosed,
+  .footer {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    margin-left: 0;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
   }
 }

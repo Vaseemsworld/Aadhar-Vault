@@ -108,7 +108,7 @@ export default function Operators() {
               <p className={styles.noData}>No operators found.</p>
             ) : (
               <table className={styles.table}>
-                <thead>
+                <thead className={styles.thead}>
                   <tr>
                     <th>#</th>
                     <th>Username</th>
@@ -140,7 +140,7 @@ export default function Operators() {
             {showDelete && (
               <div className={styles.warningBox}>
                 <div className={styles.deleteContainer}>
-                  <p>Are you sure you want to delete this entry?</p>
+                  <p>Are you sure you want to delete this Operator?</p>
                   <div className={styles.btns}>
                     <button
                       className={styles.cancelBtn}

@@ -14,13 +14,17 @@ def save_fingerprints(fingerprints, order_id):
 
     for finger, data in fingerprints.items():
         if data.startswith("data:image"):
-            format, imgstr = data.split(";base64,")
-            ext = format.split("/")[-1]
-            filename = f"{finger}_{uuid.uuid4().hex}.{ext}"
-            filepath = os.path.join(folder, filename)
-            with open(filepath, "wb") as f:
-                f.write(base64.b64decode(imgstr))
-            saved_files[finger] = f"fingerprints/{order_id}/{filename}"
+            try:
+                format, imgstr = data.split(";base64,")
+                ext = format.split("/")[-1]
+                filename = f"{finger}_{uuid.uuid4().hex}.{ext}"
+                filepath = os.path.join(folder, filename)
+            
+                with open(filepath, "wb") as f:
+                    f.write(base64.b64decode(imgstr))
+                saved_files[finger] = f"fingerprints/{order_id}/{filename}"
+            except Exception as e:
+                saved_files[finger] = None
         else:
             saved_files[finger] = data
     return saved_files
