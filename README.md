@@ -12,9 +12,11 @@ A full-stack web application for managing Aadhaar update orders, operator assign
 
 ## 📌 Overview
 
-Aadhaar Vault is a production-ready platform designed to streamline the management of Aadhaar-related service requests. The system supports two user roles — **Admin** and **Operator** — each with a dedicated dashboard and scoped permissions.
+Aadhaar Vault is a role-based platform for managing Aadhaar-related service requests, built to production-quality standards as a portfolio project. The system supports two user roles — **Admin** and **Operator** — each with a dedicated dashboard and scoped permissions.
 
 Admins create and manage orders, assign them to operators, and monitor overall workflow. Operators receive assigned orders, process them, and submit fingerprint data — all through a secure, role-based interface.
+
+This is a standalone demo system built to explore real-world order-management workflows — it is not connected to UIDAI or any live Aadhaar infrastructure.
 
 ---
 
@@ -47,10 +49,10 @@ Admins create and manage orders, assign them to operators, and monitor overall w
 
 ### 🔒 Security
 
-- Role-based access control (Admin vs Operator)
-- Encrypted file handling
-- Input validation on all forms before backend submission
-- Session security with Django backend
+- Role-based access control (Admin vs Operator) enforced at both frontend routing and backend API level
+- Session-based auth with secure cookie handling (HttpOnly, SameSite)
+- CSRF protection via Django's built-in middleware
+- Server-side input validation on all forms before database writes
 
 ---
 
@@ -195,10 +197,10 @@ Operator Login
 
 ## 📊 Key Outcomes
 
-- ✅ Reduced manual order processing time by **40%**
-- ✅ Eliminated paperwork errors through digital form validation
-- ✅ Scalable role-based system — easily extendable to more roles
-- ✅ Fully deployed and accessible from any device
+- ✅ Built a two-role (Admin/Operator) permission system from scratch, including scoped API access and protected routing
+- ✅ Designed a multi-step order form with conditional fields per Aadhaar update type (mobile update, enrollment, demographics)
+- ✅ Implemented fingerprint upload and per-order file management
+- ✅ Fully deployed with a live frontend (Vercel) and backend (Render), demonstrating end-to-end deployment ownership
 
 ---
 
