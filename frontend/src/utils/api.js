@@ -1,12 +1,14 @@
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 let csrfToken = "";
 
 // Fetch CSRF token once at app startup
 export async function initCSRF() {
   try {
     const res = await axios.get(
-      "https://aadhar-vault-backend.onrender.com/api/csrf/",
+      `${API_URL}/api/csrf/`,
       {
         withCredentials: true,
       }
@@ -22,7 +24,7 @@ export async function initCSRF() {
 
 // Axios instance
 const api = axios.create({
-  baseURL: "https://aadhar-vault-backend.onrender.com/api/",
+  baseURL: `${API_URL}/api/`,
   withCredentials: true,
 });
 

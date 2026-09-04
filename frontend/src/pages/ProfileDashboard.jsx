@@ -13,9 +13,9 @@ import api from "../utils/api";
 const ProfileDashboard = () => {
   const [activeTab, setActiveTab] = useState("edit");
   const [profileData, setProfileData] = useState({
-    name: "Aadhar Vault",
+    name: "demo",
     phone: "",
-    email: "srk@gmail.com",
+    email: "demo@gmail.com",
     phone2: "",
     interest: "",
     education: "",
@@ -70,7 +70,7 @@ const ProfileDashboard = () => {
             </div>
           </div>
 
-          <h2 className={styles.profileName}>Aadhar Vault</h2>
+          <h2 className={styles.profileName}>{profileData.name}</h2>
 
           <div className={styles.socialIcons}>
             <div className={`${styles.socialIcon} ${styles.facebook}`}>
